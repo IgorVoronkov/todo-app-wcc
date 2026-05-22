@@ -1,0 +1,56 @@
+---
+alwaysApply: true
+---
+
+# Project: Todo App
+
+## Stack
+
+- React 19 + TypeScript (strict mode)
+- Vite
+- Tailwind CSS v4
+- TanStack Query — server state
+- Zustand — client state (filters, UI)
+- axios — http client with interceptors
+- MSW — API mocking
+- shadcn/ui — UI components
+- Vitest + React Testing Library — tests
+- ESLint + Prettier + Husky + lint-staged
+
+## Architecture
+
+Feature-Sliced Design (FSD):
+src/
+├── app/
+├── pages/
+├── widgets/
+├── features/
+├── entities/
+└── shared/
+├── api/
+├── ui/
+├── lib/
+├── config/
+└── types/
+
+## FSD Import Rules
+
+- Верхние слои импортируют нижние, но не наоборот
+- Порядок: pages → widgets → features → entities → shared
+- Никаких перекрёстных импортов между слайсами одного слоя
+
+## Code Style
+
+- Только функциональные компоненты
+- Кастомные хуки выносить в отдельные файлы
+- Именование: PascalCase для компонентов, camelCase для хуков (use-prefix)
+- Каждый модуль экспортирует через index.ts
+- Никаких any в TypeScript
+
+## Package Manager
+
+pnpm
+
+## Language
+
+Отвечай на русском языке

@@ -1,0 +1,62 @@
+---
+alwaysApply: true
+---
+
+# Project: Todo App
+
+## Stack
+
+- React 19 + TypeScript (strict mode)
+- Vite
+- Tailwind CSS v4
+- TanStack Query — server state
+- Zustand — client state (filters, UI)
+- axios — http client with interceptors
+- MSW — API mocking
+- shadcn/ui — UI components
+- Vitest + React Testing Library — tests
+- ESLint + Prettier + Husky + lint-staged
+
+## Architecture
+
+Feature-Based:
+src/
+├── features/
+│ └── todos/
+│ ├── components/
+│ ├── hooks/
+│ ├── api/
+│ ├── store/
+│ ├── types.ts
+│ └── index.ts # публичный API фичи
+├── shared/
+│ ├── ui/ # базовые компоненты shadcn
+│ ├── api/ # axios instance
+│ └── lib/ # утилиты
+├── pages/
+│ ├── TodoPage.tsx
+│ └── NotFoundPage.tsx
+└── app/
+└── App.tsx
+
+## Import Rules
+
+- Импорты из фичи только через index.ts
+- Фичи не импортируют друг друга
+- shared не знает о features
+
+## Code Style
+
+- Только функциональные компоненты
+- Кастомные хуки выносить в отдельные файлы
+- Именование: PascalCase для компонентов, camelCase для хуков (use-prefix)
+- Каждый модуль экспортирует через index.ts
+- Никаких any в TypeScript
+
+## Package Manager
+
+pnpm
+
+## Language
+
+Отвечай на русском языке

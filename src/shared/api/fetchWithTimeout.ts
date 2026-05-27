@@ -2,16 +2,14 @@ import { BASE_URL, DEFAULT_HEADERS, REQUEST_TIMEOUT_MS } from './constants'
 import { ApiError } from './apiError'
 
 export async function fetchWithTimeout<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const controller = new AbortController()
-  const controllerAbort = () => controller.abort()
-  const timeoutId = setTimeout(controllerAbort, REQUEST_TIMEOUT_MS)
-
-  options.signal?.addEventListener('abort', controllerAbort)
+  const signals = [AbortSignal.timeout(REQUEST_TIMEOUT_MS)]
+  if (options.signal) signals.push(options.signal)
+  const combinedSignal = AbortSignal.any(signals)
 
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       ...options,
-      signal: controller.signal,
+      signal: combinedSignal,
       headers: {
         ...DEFAULT_HEADERS,
         ...options.headers,
@@ -27,19 +25,18 @@ export async function fetchWithTimeout<T>(endpoint: string, options: RequestInit
 
     return response.json() as T
   } catch (error) {
-    if (error instanceof DOMException && error.name === 'AbortError') {
-      if (options.signal?.aborted) throw error
+    if (error instanceof DOMException && error.name === 'TimeoutError') {
+      throw new ApiError(408, 'Request timeout', { originalMessage: error.message }, error)
+    }
 
-      throw new ApiError(408, 'Request timeout', { originalMessage: error.message })
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw error
     }
 
     if (error instanceof TypeError) {
-      throw new ApiError(0, 'Network error', { originalMessage: error.message })
+      throw new ApiError(0, 'Network error', { originalMessage: error.message }, error)
     }
 
     throw error
-  } finally {
-    clearTimeout(timeoutId)
-    options.signal?.removeEventListener('abort', controllerAbort)
   }
 }
